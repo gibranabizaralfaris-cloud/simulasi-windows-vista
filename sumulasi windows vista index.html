@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Windows Vista Simulator</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    user-select:none;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+    font-family:"Segoe UI",Tahoma,Arial,sans-serif;
+}
+
+body{
+    background:
+      radial-gradient(circle at 50% 30%,rgba(255,255,255,.35),transparent 35%),
+      linear-gradient(135deg,#123d61,#1b6d94 45%,#0d3554);
+}
+
+/* ===== DESKTOP ===== */
+
+#desktop{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+}
+
+.wallpaper{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 75% 30%,rgba(255,255,255,.5),transparent 12%),
+      radial-gradient(circle at 40% 80%,rgba(80,180,255,.3),transparent 20%),
+      linear-gradient(145deg,#071c32 0%,#12567d 35%,#3287a8 65%,#082c49 100%);
+}
+
+.wallpaper:before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:
+      linear-gradient(115deg,transparent 42%,rgba(255,255,255,.15) 43%,transparent 44%),
+      linear-gradient(70deg,transparent 58%,rgba(255,255,255,.08) 59%,transparent 60%);
+}
+
+/* ===== DESKTOP ICONS ===== */
+
+.desktop-icons{
+    position:absolute;
+    top:18px;
+    left:15px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.desktop-icon{
+    width:82px;
+    min-height:78px;
+    text-align:center;
+    color:white;
+    font-size:12px;
+    text-shadow:0 1px 3px #000;
+    padding:5px;
+    border:1px solid transparent;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.desktop-icon:hover{
+    background:rgba(80,160,220,.28);
+    border-color:rgba(255,255,255,.4);
+}
+
+.desktop-icon .big{
+    font-size:38px;
+    line-height:42px;
+    filter:drop-shadow(0 2px 2px #333);
+}
+
+.desktop-icon span{
+    display:block;
+}
+
+/* ===== TASKBAR ===== */
+
+#taskbar{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:54px;
+    background:
+      linear-gradient(to bottom,
+      rgba(20,50,70,.88),
+      rgba(4,22,38,.94));
+    border-top:1px solid rgba(255,255,255,.5);
+    box-shadow:0 -2px 10px rgba(0,0,0,.5);
+    display:flex;
+    align-items:center;
+    z-index:5000;
+}
+
+#startButton{
+    width:72px;
+    height:54px;
+    border:0;
+    background:
+      radial-gradient(circle at 50% 45%,#9dffb2 0 12%,#38bd66 25%,#08742d 60%,#03451d);
+    border-radius:0 18px 18px 0;
+    box-shadow:
+      inset 0 1px 5px rgba(255,255,255,.8),
+      2px 0 8px rgba(0,0,0,.5);
+    color:white;
+    font-size:31px;
+    cursor:pointer;
+    text-shadow:0 2px 3px #003b18;
+}
+
+#startButton:hover{
+    filter:brightness(1.25);
+}
+
+.task-apps{
+    display:flex;
+    gap:4px;
+    margin-left:8px;
+}
+
+.task-button{
+    height:40px;
+    min-width:48px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:5px;
+    background:rgba(50,90,120,.55);
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.task-button:hover{
+    background:rgba(100,170,220,.55);
+}
+
+#clock{
+    margin-left:auto;
+    width:105px;
+    color:white;
+    text-align:center;
+    font-size:12px;
+    text-shadow:0 1px 3px black;
+}
+
+.clock-time{
+    font-size:14px;
+}
+
+/* ===== START MENU ===== */
+
+#startMenu{
+    position:absolute;
+    width:490px;
+    height:535px;
+    left:8px;
+    bottom:54px;
+    display:none;
+    z-index:6000;
+    border-radius:10px 10px 0 0;
+    overflow:hidden;
+    background:rgba(225,240,250,.94);
+    border:1px solid white;
+    box-shadow:0 0 25px rgba(0,0,0,.75);
+    backdrop-filter:blur(14px);
+}
+
+.start-header{
+    height:82px;
+    background:linear-gradient(to bottom,#2b7bad,#0b456d);
+    color:white;
+    display:flex;
+    align-items:center;
+    padding:12px;
+}
+
+.user-avatar{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 32%,#ffe0bd 0 18%,transparent 19%),
+      radial-gradient(circle at 50% 40%,#8b542f 0 28%,transparent 29%),
+      linear-gradient(#e9f5ff,#78a9c7);
+    border:3px solid white;
+    box-shadow:0 2px 7px #000;
+    margin-right:12px;
+}
+
+.user-name{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.start-content{
+    display:flex;
+    height:365px;
+}
+
+.start-left{
+    width:62%;
+    padding:12px;
+    background:rgba(255,255,255,.88);
+}
+
+.start-right{
+    width:38%;
+    padding:12px;
+    background:linear-gradient(to right,rgba(20,90,130,.92),rgba(10,65,100,.92));
+    color:white;
+}
+
+.start-search{
+    width:100%;
+    height:35px;
+    border-radius:18px;
+    border:1px solid #aaa;
+    padding:0 15px;
+    font-size:14px;
+    outline:none;
+    margin-bottom:9px;
+}
+
+.menu-item{
+    height:39px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:5px 8px;
+    border-radius:4px;
+    cursor:pointer;
+    color:#222;
+    font-size:14px;
+}
+
+.menu-item:hover{
+    background:linear-gradient(#eaf7ff,#b9ddf2);
+    border:1px solid #7bb7d9;
+}
+
+.menu-icon{
+    width:28px;
+    font-size:23px;
+    text-align:center;
+}
+
+.right-item{
+    color:white;
+    height:36px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    cursor:pointer;
+    border-radius:4px;
+    padding:5px;
+}
+
+.right-item:hover{
+    background:rgba(255,255,255,.18);
+}
+
+.start-footer{
+    height:88px;
+    background:rgba(215,232,242,.95);
+    border-top:1px solid #aaa;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding:15px;
+    gap:8px;
+}
+
+.power-button,
+.lock-button{
+    border:1px solid #777;
+    border-radius:5px;
+    padding:8px 14px;
+    background:linear-gradient(#fff,#bbb);
+    cursor:pointer;
+}
+
+.power-button:hover,
+.lock-button:hover{
+    background:linear-gradient(#fff,#d9f1ff);
+}
+
+/* ===== WINDOWS ===== */
+
+.window{
+    position:absolute;
+    width:620px;
+    height:410px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-55%);
+    display:none;
+    flex-direction:column;
+    border-radius:9px;
+    overflow:hidden;
+    background:#f2f6f8;
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:
+      0 8px 35px rgba(0,0,0,.7),
+      inset 0 0 8px rgba(255,255,255,.8);
+    z-index:1000;
+}
+
+.window.active{
+    display:flex;
+}
+
+.titlebar{
+    height:39px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    padding:0 7px 0 12px;
+    color:white;
+    font-weight:bold;
+    text-shadow:0 1px 3px #000;
+    background:
+      linear-gradient(to bottom,
+      rgba(75,150,202,.9),
+      rgba(18,72,112,.92));
+    border-bottom:1px solid #123c59;
+    cursor:move;
+}
+
+.title-icon{
+    margin-right:8px;
+    font-size:19px;
+}
+
+.title-name{
+    flex:1;
+}
+
+.window-controls{
+    display:flex;
+    gap:3px;
+}
+
+.win-btn{
+    width:31px;
+    height:25px;
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:4px;
+    background:rgba(30,80,120,.6);
+    color:white;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.win-btn:hover{
+    background:rgba(100,170,220,.8);
+}
+
+.win-close:hover{
+    background:#c84242;
+}
+
+.toolbar{
+    height:40px;
+    background:linear-gradient(#fff,#dce7ed);
+    border-bottom:1px solid #aaa;
+    display:flex;
+    align-items:center;
+    padding:5px 10px;
+    gap:5px;
+}
+
+.toolbar button{
+    border:1px solid #aab6bd;
+    background:linear-gradient(#fff,#d9e3e8);
+    border-radius:4px;
+    padding:5px 11px;
+    cursor:pointer;
+}
+
+.toolbar button:hover{
+    background:#c9e7f7;
+}
+
+.window-body{
+    flex:1;
+    overflow:auto;
+}
+
+/* ===== COMPUTER ===== */
+
+.computer-body{
+    background:#fff;
+    display:flex;
+    height:100%;
+}
+
+.sidebar{
+    width:165px;
+    background:linear-gradient(to right,#eaf6fc,#d4e9f4);
+    border-right:1px solid #aaa;
+    padding:12px;
+}
+
+.sidebar h3{
+    margin:5px 0 12px;
+    color:#164d71;
+    font-size:14px;
+}
+
+.side-link{
+    padding:8px;
+    color:#125487;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+.side-link:hover{
+    background:#c5e5f7;
+}
+
+.drives{
+    padding:15px;
+    flex:1;
+}
+
+.drive{
+    width:145px;
+    height:120px;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    margin:10px;
+    border:1px solid transparent;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.drive:hover{
+    background:#e5f4fd;
+    border-color:#8bc3e2;
+}
+
+.drive-icon{
+    font-size:50px;
+}
+
+/* ===== NOTEPAD ===== */
+
+.notepad{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+.notepad-menu{
+    height:32px;
+    background:#f2f2f2;
+    border-bottom:1px solid #aaa;
+    display:flex;
+    align-items:center;
+    padding-left:5px;
+}
+
+.notepad-menu span{
+    padding:5px 10px;
+    cursor:pointer;
+}
+
+.notepad-menu span:hover{
+    background:#ddd;
+}
+
+#editor{
+    flex:1;
+    resize:none;
+    border:0;
+    outline:none;
+    padding:10px;
+    font-family:Consolas,monospace;
+    font-size:14px;
+    background:white;
+    color:#111;
+}
+
+/* ===== CONTROL PANEL ===== */
+
+.control{
+    padding:20px;
+    background:#f7fbfd;
+}
+
+.control h2{
+    color:#164d71;
+    margin-top:0;
+}
+
+.control-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.control-card{
+    background:white;
+    border:1px solid #b6ccd8;
+    border-radius:6px;
+    padding:14px;
+    cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.1);
+}
+
+.control-card:hover{
+    background:#eaf7ff;
+}
+
+.control-card .ci{
+    font-size:32px;
+}
+
+.control-card b{
+    display:block;
+    margin-top:7px;
+    color:#164d71;
+}
+
+/* ===== ABOUT ===== */
+
+.about{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(#eef8fd,#cce8f6);
+    color:#123f5d;
+    text-align:center;
+}
+
+.vista-logo{
+    font-size:70px;
+    margin-bottom:5px;
+}
+
+.about h1{
+    margin:5px;
+}
+
+.about p{
+    margin:4px;
+}
+
+/* ===== NOTIFICATIONS ===== */
+
+.notification{
+    position:absolute;
+    right:15px;
+    bottom:70px;
+    width:280px;
+    padding:14px;
+    border-radius:8px;
+    background:rgba(20,45,65,.92);
+    border:1px solid rgba(255,255,255,.5);
+    box-shadow:0 5px 18px #000;
+    color:white;
+    z-index:7000;
+    display:none;
+}
+
+.notification.show{
+    display:block;
+    animation:fadein .25s;
+}
+
+@keyframes fadein{
+    from{opacity:0;transform:translateY(15px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* ===== AERO ORBS ===== */
+
+.aero-orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(1px);
+    pointer-events:none;
+}
+
+.orb1{
+    width:300px;
+    height:300px;
+    right:-80px;
+    top:80px;
+    background:radial-gradient(circle,rgba(255,255,255,.3),rgba(60,170,230,.05) 55%,transparent 70%);
+}
+
+.orb2{
+    width:450px;
+    height:450px;
+    left:25%;
+    bottom:-250px;
+    background:radial-gradient(circle,rgba(255,255,255,.18),transparent 65%);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media(max-width:700px){
+    #startMenu{
+        width:94vw;
+        left:3vw;
+    }
+
+    .window{
+        width:94vw;
+        height:70vh;
+    }
+
+    .control-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="desktop">
+
+    <div class="wallpaper"></div>
+    <div class="aero-orb orb1"></div>
+    <div class="aero-orb orb2"></div>
+
+    <!-- DESKTOP ICONS -->
+    <div class="desktop-icons">
+
+        <div class="desktop-icon" ondblclick="openWindow('computer')">
+            <div class="big">💻</div>
+            <span>Computer</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="openWindow('notepad')">
+            <div class="big">📄</div>
+            <span>Notepad</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="openWindow('control')">
+            <div class="big">⚙️</div>
+            <span>Control Panel</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="openWindow('about')">
+            <div class="big">🪟</div>
+            <span>About Vista</span>
+        </div>
+
+    </div>
+
+    <!-- START MENU -->
+    <div id="startMenu">
+
+        <div class="start-header">
+            <div class="user-avatar"></div>
+            <div class="user-name">Administrator</div>
+        </div>
+
+        <div class="start-content">
+
+            <div class="start-left">
+
+                <input
+                    id="searchBox"
+                    class="start-search"
+                    placeholder="Start Search"
+                    oninput="searchMenu()"
+                >
+
+                <div id="menuItems">
+
+                    <div class="menu-item" onclick="openWindow('computer');closeStart()">
+                        <div class="menu-icon">💻</div>
+                        <span>Computer</span>
+                    </div>
+
+                    <div class="menu-item" onclick="openWindow('notepad');closeStart()">
+                        <div class="menu-icon">📝</div>
+                        <span>Notepad</span>
+                    </div>
+
+                    <div class="menu-item" onclick="openWindow('control');closeStart()">
+                        <div class="menu-icon">⚙️</div>
+                        <span>Control Panel</span>
+                    </div>
+
+                    <div class="menu-item" onclick="showMessage('Internet Explorer belum terhubung ke internet.');closeStart()">
+                        <div class="menu-icon">🌐</div>
+                        <span>Internet Explorer</span>
+                    </div>
+
+                    <div class="menu-item" onclick="showMessage('Windows Media Player dibuka.');closeStart()">
+                        <div class="menu-icon">🎵</div>
+                        <span>Windows Media Player</span>
+                    </div>
+
+                    <div class="menu-item" onclick="openWindow('about');closeStart()">
+                        <div class="menu-icon">🪟</div>
+                        <span>Welcome Center</span>
+                    </div>
+
+                    <div class="menu-item" onclick="showMessage('Help and Support dibuka.');closeStart()">
+                        <div class="menu-icon">❓</div>
+                        <span>Help and Support</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="start-right">
+
+                <div class="right-item" onclick="openWindow('computer');closeStart()">
+                    📁 <span>Documents</span>
+                </div>
+
+                <div class="right-item" onclick="openWindow('computer');closeStart()">
+                    🖼️ <span>Pictures</span>
+                </div>
+
+                <div class="right-item" onclick="openWindow('computer');closeStart()">
+                    🎵 <span>Music</span>
+                </div>
+
+                <div class="right-item" onclick="openWindow('computer');closeStart()">
+                    🎮 <span>Games</span>
+                </div>
+
+                <hr style="border:0;border-top:1px solid rgba(255,255,255,.25)">
+
+                <div class="right-item" onclick="openWindow('control');closeStart()">
+                    ⚙️ <span>Control Panel</span>
+                </div>
+
+                <div class="right-item" onclick="showMessage('Default Programs');closeStart()">
+                    📦 <span>Default Programs</span>
+                </div>
+
+                <div class="right-item" onclick="showMessage('Network connections');closeStart()">
+                    🌐 <span>Network</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="start-footer">
+            <button class="lock-button" onclick="showMessage('Computer dikunci.')">🔒</button>
+            <button class="power-button" onclick="powerOff()">⏻ Shut Down</button>
+        </div>
+
+    </div>
+
+    <!-- COMPUTER WINDOW -->
+    <div id="computer" class="window">
+
+        <div class="titlebar">
+            <div class="title-icon">💻</div>
+            <div class="title-name">Computer</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minimizeWindow('computer')">—</button>
+                <button class="win-btn" onclick="maximizeWindow('computer')">□</button>
+                <button class="win-btn win-close" onclick="closeWindow('computer')">×</button>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button onclick="showMessage('Back')">←</button>
+            <button onclick="showMessage('Forward')">→</button>
+            <button onclick="showMessage('Organize')">Organize</button>
+            <button onclick="showMessage('Views')">Views</button>
+        </div>
+
+        <div class="window-body computer-body">
+
+            <div class="sidebar">
+                <h3>Favorite Links</h3>
+                <div class="side-link">📁 Documents</div>
+                <div class="side-link">🖼️ Pictures</div>
+                <div class="side-link">🎵 Music</div>
+
+                <h3>Tasks</h3>
+                <div class="side-link">💻 System Properties</div>
+                <div class="side-link">➕ Add or Remove</div>
+            </div>
+
+            <div class="drives">
+
+                <h2 style="color:#174f72;font-size:20px">Hard Disk Drives</h2>
+
+                <div class="drive" onclick="showMessage('Local Disk (C:)')">
+                    <div class="drive-icon">💽</div>
+                    <b>Local Disk (C:)</b>
+                    <small>45 GB free</small>
+                </div>
+
+                <div class="drive" onclick="showMessage('Local Disk (D:)')">
+                    <div class="drive-icon">💽</div>
+                    <b>Local Disk (D:)</b>
+                    <small>120 GB free</small>
+                </div>
+
+                <h2 style="color:#174f72;font-size:20px">Devices</h2>
+
+                <div class="drive">
+                    <div class="drive-icon">💿</div>
+                    <b>DVD Drive</b>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- NOTEPAD WINDOW -->
+    <div id="notepad" class="window">
+
+        <div class="titlebar">
+            <div class="title-icon">📝</div>
+            <div class="title-name">Untitled - Notepad</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minimizeWindow('notepad')">—</button>
+                <button class="win-btn" onclick="maximizeWindow('notepad')">□</button>
+                <button class="win-btn win-close" onclick="closeWindow('notepad')">×</button>
+            </div>
+        </div>
+
+        <div class="notepad">
+
+            <div class="notepad-menu">
+                <span onclick="showMessage('File menu')">File</span>
+                <span onclick="showMessage('Edit menu')">Edit</span>
+                <span onclick="showMessage('Format menu')">Format</span>
+                <span onclick="showMessage('View menu')">View</span>
+                <span onclick="showMessage('Help menu')">Help</span>
+            </div>
+
+            <textarea id="editor" spellcheck="false"
+placeholder="Ketik sesuatu di sini...">Windows Vista Simulator
+
+Selamat datang!
+
+Ini adalah simulasi Windows Vista
+yang dibuat menggunakan HTML, CSS,
+dan JavaScript dalam satu file.
+
+Coba klik Start Menu, buka Computer,
+Notepad, dan Control Panel.</textarea>
+
+        </div>
+
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div id="control" class="window">
+
+        <div class="titlebar">
+            <div class="title-icon">⚙️</div>
+            <div class="title-name">Control Panel</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minimizeWindow('control')">—</button>
+                <button class="win-btn" onclick="maximizeWindow('control')">□</button>
+                <button class="win-btn win-close" onclick="closeWindow('control')">×</button>
+            </div>
+        </div>
+
+        <div class="window-body control">
+
+            <h2>Control Panel</h2>
+
+            <p>
+                Sesuaikan pengaturan komputer Anda.
+            </p>
+
+            <div class="control-grid">
+
+                <div class="control-card" onclick="showMessage('Appearance and Personalization')">
+                    <div class="ci">🎨</div>
+                    <b>Appearance</b>
+                    Personalization
+                </div>
+
+                <div class="control-card" onclick="showMessage('System and Maintenance')">
+                    <div class="ci">🖥️</div>
+                    <b>System</b>
+                    Maintenance
+                </div>
+
+                <div class="control-card" onclick="showMessage('Network settings')">
+                    <div class="ci">🌐</div>
+                    <b>Network</b>
+                    Internet
+                </div>
+
+                <div class="control-card" onclick="showMessage('Programs')">
+                    <div class="ci">📦</div>
+                    <b>Programs</b>
+                    Features
+                </div>
+
+                <div class="control-card" onclick="showMessage('User Accounts')">
+                    <div class="ci">👤</div>
+                    <b>User Accounts</b>
+                    Family Safety
+                </div>
+
+                <div class="control-card" onclick="showMessage('Clock settings')">
+                    <div class="ci">🕒</div>
+                    <b>Clock</b>
+                    Language
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ABOUT -->
+    <div id="about" class="window">
+
+        <div class="titlebar">
+            <div class="title-icon">🪟</div>
+            <div class="title-name">Welcome Center</div>
+            <div class="window-controls">
+                <button class="win-btn" onclick="minimizeWindow('about')">—</button>
+                <button class="win-btn" onclick="maximizeWindow('about')">□</button>
+                <button class="win-btn win-close" onclick="closeWindow('about')">×</button>
+            </div>
+        </div>
+
+        <div class="window-body about">
+
+            <div class="vista-logo">🪟</div>
+
+            <h1>Windows Vista</h1>
+
+            <p>Home Premium Simulator</p>
+
+            <p>HTML Edition</p>
+
+            <br>
+
+            <button onclick="showMessage('Windows Vista Simulator berjalan dengan baik!')">
+                Check System
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- TASKBAR -->
+    <div id="taskbar">
+
+        <button id="startButton" onclick="toggleStart()">⊞</button>
+
+        <div class="task-apps">
+
+            <button class="task-button"
+                    title="Computer"
+                    onclick="openWindow('computer')">💻</button>
+
+            <button class="task-button"
+                    title="Notepad"
+                    onclick="openWindow('notepad')">📝</button>
+
+            <button class="task-button"
+                    title="Control Panel"
+                    onclick="openWindow('control')">⚙️</button>
+
+        </div>
+
+        <div id="clock">
+            <div class="clock-time" id="clockTime">00:00</div>
+            <div id="clockDate">00/00/0000</div>
+        </div>
+
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div id="notification" class="notification">
+        <b id="notificationTitle">Windows Vista</b>
+        <div id="notificationText" style="margin-top:5px"></div>
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================
+   WINDOWS VISTA SIMULATOR
+   ========================================= */
+
+let zIndex = 1000;
+
+/* START MENU */
+
+function toggleStart(){
+
+    const menu = document.getElementById("startMenu");
+
+    if(menu.style.display === "block"){
+        menu.style.display = "none";
+    }else{
+        menu.style.display = "block";
+        document.getElementById("searchBox").focus();
+    }
+
+}
+
+function closeStart(){
+    document.getElementById("startMenu").style.display = "none";
+}
+
+/* OPEN WINDOW */
+
+function openWindow(id){
+
+    closeStart();
+
+    const win = document.getElementById(id);
+
+    if(!win) return;
+
+    win.style.display = "flex";
+
+    win.classList.add("active");
+
+    win.style.zIndex = ++zIndex;
+
+    if(id === "notepad"){
+        setTimeout(()=>{
+            document.getElementById("editor").focus();
+        },100);
+    }
+
+}
+
+/* CLOSE */
+
+function closeWindow(id){
+
+    const win = document.getElementById(id);
+
+    if(!win) return;
+
+    win.style.display = "none";
+
+    win.classList.remove("active");
+
+}
+
+/* MINIMIZE */
+
+function minimizeWindow(id){
+
+    const win = document.getElementById(id);
+
+    if(!win) return;
+
+    win.style.display = "none";
+
+}
+
+/* MAXIMIZE */
+
+function maximizeWindow(id){
+
+    const win = document.getElementById(id);
+
+    if(!win) return;
+
+    if(win.dataset.maximized === "true"){
+
+        win.style.width = "620px";
+        win.style.height = "410px";
+        win.style.left = "50%";
+        win.style.top = "50%";
+        win.style.transform = "translate(-50%,-55%)";
+
+        win.dataset.maximized = "false";
+
+    }else{
+
+        win.style.width = "calc(100% - 10px)";
+        win.style.height = "calc(100% - 64px)";
+        win.style.left = "5px";
+        win.style.top = "5px";
+        win.style.transform = "none";
+
+        win.dataset.maximized = "true";
+
+    }
+
+    win.style.zIndex = ++zIndex;
+
+}
+
+/* MESSAGE */
+
+function showMessage(text){
+
+    const box = document.getElementById("notification");
+
+    document.getElementById("notificationText").textContent = text;
+
+    box.classList.add("show");
+
+    clearTimeout(window.notifyTimer);
+
+    window.notifyTimer = setTimeout(()=>{
+        box.classList.remove("show");
+    },3000);
+
+}
+
+/* SEARCH */
+
+function searchMenu(){
+
+    const query =
+        document.getElementById("searchBox")
+        .value
+        .toLowerCase();
+
+    const items =
+        document.querySelectorAll("#menuItems .menu-item");
+
+    items.forEach(item=>{
+
+        const text = item.innerText.toLowerCase();
+
+        item.style.display =
+            text.includes(query)
+            ? "flex"
+            : "none";
+
+    });
+
+}
+
+/* CLOCK */
+
+function updateClock(){
+
+    const now = new Date();
+
+    let h = String(now.getHours()).padStart(2,"0");
+    let m = String(now.getMinutes()).padStart(2,"0");
+    let s = String(now.getSeconds()).padStart(2,"0");
+
+    let d = String(now.getDate()).padStart(2,"0");
+    let mo = String(now.getMonth()+1).padStart(2,"0");
+    let y = now.getFullYear();
+
+    document.getElementById("clockTime").textContent =
+        h + ":" + m + ":" + s;
+
+    document.getElementById("clockDate").textContent =
+        d + "/" + mo + "/" + y;
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+/* POWER */
+
+function powerOff(){
+
+    closeStart();
+
+    const screen = document.createElement("div");
+
+    screen.style.position = "fixed";
+    screen.style.inset = "0";
+    screen.style.background = "#050505";
+    screen.style.color = "white";
+    screen.style.zIndex = "99999";
+    screen.style.display = "flex";
+    screen.style.flexDirection = "column";
+    screen.style.alignItems = "center";
+    screen.style.justifyContent = "center";
+    screen.style.fontFamily = "Segoe UI,Arial";
+
+    screen.innerHTML = `
+        <div style="font-size:55px">🪟</div>
+        <div style="font-size:22px;margin-top:15px">
+            Windows sedang dimatikan...
+        </div>
+        <div style="margin-top:20px;color:#aaa">
+            Simulasi Windows Vista
+        </div>
+        <button onclick="location.reload()"
+        style="
+        margin-top:30px;
+        padding:10px 25px;
+        border-radius:5px;
+        border:1px solid #777;
+        background:#222;
+        color:white;
+        cursor:pointer;">
+        Nyalakan kembali
+        </button>
+    `;
+
+    document.body.appendChild(screen);
+
+}
+
+/* CLICK OUTSIDE START MENU */
+
+document.getElementById("desktop").addEventListener("click",function(e){
+
+    const menu = document.getElementById("startMenu");
+    const start = document.getElementById("startButton");
+
+    if(
+        menu.style.display === "block" &&
+        !menu.contains(e.target) &&
+        e.target !== start
+    ){
+        menu.style.display = "none";
+    }
+
+});
+
+/* WINDOW FOCUS */
+
+document.querySelectorAll(".window").forEach(win=>{
+
+    win.addEventListener("mousedown",()=>{
+
+        win.style.zIndex = ++zIndex;
+
+    });
+
+});
+
+/* DRAG WINDOWS */
+
+document.querySelectorAll(".titlebar").forEach(titlebar=>{
+
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    titlebar.addEventListener("mousedown",(e)=>{
+
+        const win = titlebar.parentElement;
+
+        if(win.dataset.maximized === "true") return;
+
+        dragging = true;
+
+        const rect = win.getBoundingClientRect();
+
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        win.style.transform = "none";
+
+        win.style.zIndex = ++zIndex;
+
+    });
+
+    document.addEventListener("mousemove",(e)=>{
+
+        if(!dragging) return;
+
+        const win = titlebar.parentElement;
+
+        win.style.left =
+            (e.clientX - offsetX) + "px";
+
+        win.style.top =
+            (e.clientY - offsetY) + "px";
+
+    });
+
+    document.addEventListener("mouseup",()=>{
+
+        dragging = false;
+
+    });
+
+});
+
+/* ESC CLOSE START MENU */
+
+document.addEventListener("keydown",(e)=>{
+
+    if(e.key === "Escape"){
+        closeStart();
+    }
+
+});
+
+/* WELCOME */
+
+setTimeout(()=>{
+
+    showMessage(
+        "Selamat datang di Windows Vista Simulator!"
+    );
+
+},800);
+
+</script>
+
+</body>
+</html>
